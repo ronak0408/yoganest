@@ -155,7 +155,3 @@ cd client && npm start
 | Module Detail | `/modules/:id` | Full module info with steps |
 | Posture Tracker | `/posture` | Simulated AI posture feedback |
 | Profile | `/profile` | User settings & preferences |
-
-## 📜 License
-
-MIT
