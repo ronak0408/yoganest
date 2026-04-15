@@ -1,5 +1,8 @@
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const YogaModule = require('../models/YogaModule');
+
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 // @desc    Toggle favorite status of a yoga module
 // @route   POST /api/user/favorites
@@ -8,8 +11,8 @@ const toggleFavorite = async (req, res, next) => {
   try {
     const { moduleId } = req.body;
 
-    if (!moduleId) {
-      return res.status(400).json({ success: false, message: 'moduleId is required' });
+    if (!moduleId || !isValidObjectId(moduleId)) {
+      return res.status(400).json({ success: false, message: 'Valid moduleId is required' });
     }
 
     const moduleExists = await YogaModule.findById(moduleId);
@@ -90,8 +93,8 @@ const markComplete = async (req, res, next) => {
   try {
     const { moduleId, duration } = req.body;
 
-    if (!moduleId) {
-      return res.status(400).json({ success: false, message: 'moduleId is required' });
+    if (!moduleId || !isValidObjectId(moduleId)) {
+      return res.status(400).json({ success: false, message: 'Valid moduleId is required' });
     }
 
     const moduleExists = await YogaModule.findById(moduleId);

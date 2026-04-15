@@ -1,5 +1,8 @@
 const YogaModule = require('../models/YogaModule');
 
+// Escape special regex characters in user input
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // @desc    Get all active yoga modules with optional filters
 // @route   GET /api/yoga
 // @access  Public
@@ -8,17 +11,24 @@ const getAllModules = async (req, res, next) => {
     const query = { isActive: true };
 
     if (req.query.category) {
-      query.category = req.query.category;
+      const allowedCategories = ['Flexibility', 'Strength', 'Relaxation', 'Balance', 'Meditation', 'Energy'];
+      if (allowedCategories.includes(req.query.category)) {
+        query.category = req.query.category;
+      }
     }
 
     if (req.query.difficulty) {
-      query.difficultyLevel = req.query.difficulty;
+      const allowedLevels = ['Beginner', 'Intermediate', 'Advanced'];
+      if (allowedLevels.includes(req.query.difficulty)) {
+        query.difficultyLevel = req.query.difficulty;
+      }
     }
 
-    if (req.query.search) {
+    if (req.query.search && typeof req.query.search === 'string') {
+      const escaped = escapeRegex(req.query.search.slice(0, 100));
       query.$or = [
-        { title: { $regex: req.query.search, $options: 'i' } },
-        { tags: { $regex: req.query.search, $options: 'i' } },
+        { title: { $regex: escaped, $options: 'i' } },
+        { tags: { $regex: escaped, $options: 'i' } },
       ];
     }
 

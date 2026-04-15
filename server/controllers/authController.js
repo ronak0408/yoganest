@@ -20,12 +20,12 @@ const register = async (req, res, next) => {
 
     const { name, email, password, difficultyLevel } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: String(email) });
     if (existingUser) {
       return res.status(400).json({ success: false, message: 'Email already registered' });
     }
 
-    const user = await User.create({ name, email, password, difficultyLevel });
+    const user = await User.create({ name, email: String(email), password, difficultyLevel });
 
     const token = generateToken(user._id);
 
@@ -57,7 +57,7 @@ const login = async (req, res, next) => {
 
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email: String(email) }).select('+password');
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
