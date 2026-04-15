@@ -22,8 +22,11 @@ const getAllModules = async (req, res, next) => {
     }
 
     if (req.query.search && typeof req.query.search === 'string') {
-      // Use $text search on the indexed fields (title, tags) - avoids regex injection
-      query.$text = { $search: req.query.search.slice(0, 100) };
+      // Strip characters that have special meaning in MongoDB $text search
+      const sanitized = req.query.search.slice(0, 100).replace(/[$"\\]/g, '');
+      if (sanitized.trim()) {
+        query.$text = { $search: sanitized };
+      }
     }
 
     const modules = await YogaModule.find(query).sort({ createdAt: -1 });
