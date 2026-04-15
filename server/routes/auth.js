@@ -14,6 +14,14 @@ const authLimiter = rateLimit({
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests, please try again later.' },
+});
+
 router.post(
   '/register',
   authLimiter,
@@ -37,6 +45,6 @@ router.post(
   login
 );
 
-router.get('/profile', protect, getProfile);
+router.get('/profile', apiLimiter, protect, getProfile);
 
 module.exports = router;

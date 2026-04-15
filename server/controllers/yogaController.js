@@ -1,8 +1,5 @@
 const YogaModule = require('../models/YogaModule');
 
-// Escape special regex characters in user input
-const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
 // @desc    Get all active yoga modules with optional filters
 // @route   GET /api/yoga
 // @access  Public
@@ -25,11 +22,8 @@ const getAllModules = async (req, res, next) => {
     }
 
     if (req.query.search && typeof req.query.search === 'string') {
-      const escaped = escapeRegex(req.query.search.slice(0, 100));
-      query.$or = [
-        { title: { $regex: escaped, $options: 'i' } },
-        { tags: { $regex: escaped, $options: 'i' } },
-      ];
+      // Use $text search on the indexed fields (title, tags) - avoids regex injection
+      query.$text = { $search: req.query.search.slice(0, 100) };
     }
 
     const modules = await YogaModule.find(query).sort({ createdAt: -1 });

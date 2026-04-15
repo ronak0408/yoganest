@@ -78,5 +78,6 @@ const yogaModuleSchema = new mongoose.Schema({
 });
 
 yogaModuleSchema.index({ category: 1, difficultyLevel: 1 });
+yogaModuleSchema.index({ title: 'text', tags: 'text' });
 
 module.exports = mongoose.model('YogaModule', yogaModuleSchema);
