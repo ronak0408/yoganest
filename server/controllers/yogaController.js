@@ -3,8 +3,9 @@ const YogaModule = require('../models/YogaModule');
 const getModules = async (req, res) => {
   try {
     const filter = {};
-    if (req.query.category) filter.category = req.query.category;
-    if (req.query.difficulty) filter.difficulty = req.query.difficulty;
+    // Explicitly cast to string to prevent NoSQL injection via object payloads
+    if (req.query.category) filter.category = String(req.query.category);
+    if (req.query.difficulty) filter.difficulty = String(req.query.difficulty);
 
     const modules = await YogaModule.find(filter).sort({ createdAt: -1 });
 

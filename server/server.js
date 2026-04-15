@@ -1,7 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
+
+// Fail fast on missing critical environment variables
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is not set.');
+  process.exit(1);
+}
+if (!process.env.MONGODB_URI) {
+  console.error('FATAL: MONGODB_URI environment variable is not set.');
+  process.exit(1);
+}
 
 const authRoutes = require('./routes/authRoutes');
 const yogaRoutes = require('./routes/yogaRoutes');
@@ -13,9 +24,31 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Global rate limiter: 100 requests per 15 minutes per IP
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests, please try again later.' },
+});
+
+// Stricter limiter for auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many authentication attempts, please try again later.' },
+});
+
+app.use('/api', globalLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/login', authLimiter);
+
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/yoganest');
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (err) {
     console.error(`MongoDB connection error: ${err.message}`);

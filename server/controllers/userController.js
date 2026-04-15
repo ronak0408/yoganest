@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const YogaModule = require('../models/YogaModule');
 
+const MS_PER_DAY = 86400000;
+
 const toggleFavorite = async (req, res) => {
   const { moduleId } = req.body;
 
@@ -8,21 +10,24 @@ const toggleFavorite = async (req, res) => {
     return res.status(400).json({ success: false, message: 'moduleId is required' });
   }
 
+  // Sanitize to string to prevent NoSQL injection
+  const safeModuleId = String(moduleId);
+
   try {
-    const moduleExists = await YogaModule.findById(moduleId);
+    const moduleExists = await YogaModule.findById(safeModuleId);
     if (!moduleExists) {
       return res.status(404).json({ success: false, message: 'Yoga module not found' });
     }
 
     const user = await User.findById(req.user._id);
-    const isFavorite = user.favorites.some((id) => id.toString() === moduleId);
+    const isFavorite = user.favorites.some((id) => id.toString() === safeModuleId);
 
     let action;
     if (isFavorite) {
-      user.favorites = user.favorites.filter((id) => id.toString() !== moduleId);
+      user.favorites = user.favorites.filter((id) => id.toString() !== safeModuleId);
       action = 'removed';
     } else {
-      user.favorites.push(moduleId);
+      user.favorites.push(safeModuleId);
       action = 'added';
     }
 
@@ -64,14 +69,17 @@ const logProgress = async (req, res) => {
     return res.status(400).json({ success: false, message: 'duration must be a positive number' });
   }
 
+  // Sanitize to string to prevent NoSQL injection
+  const safeModuleId = String(moduleId);
+
   try {
-    const moduleExists = await YogaModule.findById(moduleId);
+    const moduleExists = await YogaModule.findById(safeModuleId);
     if (!moduleExists) {
       return res.status(404).json({ success: false, message: 'Yoga module not found' });
     }
 
     const user = await User.findById(req.user._id);
-    user.completedSessions.push({ module: moduleId, duration, completedAt: new Date() });
+    user.completedSessions.push({ module: safeModuleId, duration, completedAt: new Date() });
     await user.save();
 
     return res.status(201).json({
@@ -122,7 +130,7 @@ const calculateStreak = (sessions) => {
   ].sort((a, b) => new Date(b) - new Date(a));
 
   const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - MS_PER_DAY).toISOString().split('T')[0];
 
   // Streak must include today or yesterday to be active
   if (uniqueDays[0] !== today && uniqueDays[0] !== yesterday) return 0;
@@ -132,7 +140,7 @@ const calculateStreak = (sessions) => {
     const prev = new Date(uniqueDays[i - 1]);
     const curr = new Date(uniqueDays[i]);
     const diffMs = prev - curr;
-    const diffDays = diffMs / 86400000;
+    const diffDays = diffMs / MS_PER_DAY;
     if (Math.round(diffDays) === 1) {
       streak++;
     } else {

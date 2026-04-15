@@ -4,9 +4,14 @@ require('dotenv').config({ path: '../.env' });
 const YogaModule = require('../models/YogaModule');
 const yogaModules = require('./yogaModules');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/yoganest';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const seed = async () => {
+  if (!MONGODB_URI) {
+    console.error('FATAL: MONGODB_URI environment variable is not set.');
+    process.exit(1);
+  }
+
   try {
     await mongoose.connect(MONGODB_URI);
     console.log('MongoDB connected for seeding...');
