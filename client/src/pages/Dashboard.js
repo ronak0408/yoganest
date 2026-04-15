@@ -56,7 +56,15 @@ export default function Dashboard() {
 
       if (recsRes.status === 'fulfilled') {
         const d = recsRes.value.data;
-        setRecommendations(Array.isArray(d) ? d : d.recommendations || []);
+        // API returns { data: { recommendations: [{ module, reason }] } }
+        const rawList = Array.isArray(d)
+          ? d
+          : d.data?.recommendations || d.recommendations || [];
+        // Unwrap { module, reason } wrappers if present
+        const normalized = rawList.map((item) =>
+          item && item.module ? item.module : item
+        );
+        setRecommendations(normalized);
       }
       if (progressRes.status === 'fulfilled') {
         const d = progressRes.value.data;
@@ -81,7 +89,13 @@ export default function Dashboard() {
     setRecsLoading(true);
     try {
       const { data } = await api.get('/recommendations');
-      setRecommendations(Array.isArray(data) ? data : data.recommendations || []);
+      const rawList = Array.isArray(data)
+        ? data
+        : data.data?.recommendations || data.recommendations || [];
+      const normalized = rawList.map((item) =>
+        item && item.module ? item.module : item
+      );
+      setRecommendations(normalized);
     } catch {
       // silently fail
     } finally {
