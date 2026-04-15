@@ -1,1 +1,7 @@
 server/node_modules/
+server/.env
+
+*.log
+npm-debug.log*
+.DS_Store
+dist/
