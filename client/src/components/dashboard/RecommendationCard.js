@@ -27,7 +27,7 @@ export default function RecommendationCard({ module }) {
             {module?.title}
           </h4>
           <div className="flex items-center space-x-2 mt-0.5">
-            <DifficultyBadge difficulty={module?.difficulty} />
+            <DifficultyBadge difficulty={module?.difficultyLevel} />
             <span className="text-xs text-secondary-400 dark:text-secondary-500">{module?.duration} min</span>
           </div>
         </div>

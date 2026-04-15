@@ -36,9 +36,7 @@ export default function Signup() {
     }
     setLoading(true);
     try {
-      await register(formData.name, formData.email, formData.password, {
-        difficulty: formData.difficulty,
-      });
+      await register(formData.name, formData.email, formData.password, formData.difficulty);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');

@@ -42,7 +42,7 @@ export default function ModuleDetail() {
 
         // Fetch related modules (same category)
         const allRes = await yogaAPI.getAllModules();
-        const all = allRes.data.modules || allRes.data || [];
+        const all = allRes.data.data || [];
         const rel = all.filter((m) => m._id !== id && m.category === mod?.category).slice(0, 3);
         setRelated(rel);
       } catch (err) {
@@ -121,7 +121,7 @@ export default function ModuleDetail() {
             <span className="bg-white/20 text-white text-sm px-3 py-1 rounded-full capitalize backdrop-blur-sm">
               {module.category}
             </span>
-            <DifficultyBadge difficulty={module.difficulty} />
+            <DifficultyBadge difficulty={module.difficultyLevel} />
             <span className="flex items-center space-x-1 text-white/80 text-sm">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -224,7 +224,7 @@ export default function ModuleDetail() {
                 </div>
                 <div className="flex justify-between items-center">
                   <dt className="text-secondary-500 dark:text-secondary-400">Difficulty</dt>
-                  <dd><DifficultyBadge difficulty={module.difficulty} /></dd>
+                  <dd><DifficultyBadge difficulty={module.difficultyLevel} /></dd>
                 </div>
               </dl>
             </div>

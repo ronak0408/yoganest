@@ -42,7 +42,7 @@ export default function Dashboard() {
           userAPI.getProgress(),
         ]);
         if (recRes.status === 'fulfilled') {
-          const recs = recRes.value.data.recommendations || recRes.value.data || [];
+          const recs = recRes.value.data.data || [];
           setRecommendations(recs.slice(0, 6));
         }
         if (progRes.status === 'fulfilled') {
@@ -55,8 +55,8 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  const completedCount = progress?.completedModules?.length ?? 0;
-  const favoritesCount = progress?.favoritesCount ?? 0;
+  const completedCount = progress?.stats?.totalCompleted ?? 0;
+  const favoritesCount = progress?.stats?.favoritesCount ?? 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
@@ -74,7 +74,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
         <StatCard icon="✅" label="Sessions Completed" value={completedCount} color="border-green-500" />
         <StatCard icon="❤️" label="Favorites" value={favoritesCount} color="border-red-400" />
-        <StatCard icon="🎯" label="Current Level" value={user?.preferences?.difficulty || 'Beginner'} color="border-blue-500" />
+        <StatCard icon="🎯" label="Current Level" value={user?.difficultyLevel || 'Beginner'} color="border-blue-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -35,7 +35,7 @@ export default function Modules() {
       setError(null);
       try {
         const response = await yogaAPI.getAllModules();
-        setAllModules(response.data.modules || response.data || []);
+        setAllModules(response.data.data || []);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load modules. Please try again.');
       } finally {
@@ -56,7 +56,7 @@ export default function Modules() {
         mod.category?.toLowerCase() === selectedCategory.toLowerCase();
       const matchDifficulty =
         selectedDifficulty === 'All' ||
-        mod.difficulty?.toLowerCase() === selectedDifficulty.toLowerCase();
+        mod.difficultyLevel?.toLowerCase() === selectedDifficulty.toLowerCase();
       return matchSearch && matchCategory && matchDifficulty;
     });
   }, [allModules, search, selectedCategory, selectedDifficulty]);

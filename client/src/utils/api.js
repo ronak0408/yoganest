@@ -29,8 +29,8 @@ api.interceptors.response.use(
 
 export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
-  register: (name, email, password, preferences) =>
-    api.post('/auth/register', { name, email, password, preferences }),
+  register: (name, email, password, difficultyLevel) =>
+    api.post('/auth/register', { name, email, password, difficultyLevel }),
   getProfile: () => api.get('/auth/profile'),
 };
 
@@ -44,11 +44,16 @@ export const recommendationsAPI = {
 };
 
 export const userAPI = {
-  toggleFavorite: (moduleId) => api.post(`/user/favorites/${moduleId}`),
+  toggleFavorite: (moduleId) => api.post('/user/favorites', { moduleId }),
   getFavorites: () => api.get('/user/favorites'),
   getProgress: () => api.get('/user/progress'),
-  markComplete: (moduleId) => api.post(`/user/progress/${moduleId}/complete`),
-  updatePreferences: (preferences) => api.put('/user/preferences', { preferences }),
+  markComplete: (moduleId) => api.post('/user/progress', { moduleId }),
+  updatePreferences: (prefs) =>
+    api.put('/user/preferences', {
+      categories: prefs.categories,
+      timeOfDay: prefs.timeOfDay === 'Anytime' ? '' : prefs.timeOfDay?.toLowerCase(),
+      difficultyLevel: prefs.difficulty,
+    }),
 };
 
 export default api;

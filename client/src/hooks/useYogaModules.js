@@ -11,7 +11,7 @@ export default function useYogaModules(filters = {}) {
     setError(null);
     try {
       const response = await yogaAPI.getAllModules();
-      let data = response.data.modules || response.data || [];
+      let data = response.data.data || [];
 
       if (filters.category && filters.category !== 'All') {
         data = data.filter(
@@ -20,7 +20,7 @@ export default function useYogaModules(filters = {}) {
       }
       if (filters.difficulty && filters.difficulty !== 'All') {
         data = data.filter(
-          (m) => m.difficulty?.toLowerCase() === filters.difficulty.toLowerCase()
+          (m) => m.difficultyLevel?.toLowerCase() === filters.difficulty.toLowerCase()
         );
       }
 

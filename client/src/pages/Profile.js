@@ -20,7 +20,7 @@ export default function Profile() {
   const [saveError, setSaveError] = useState('');
 
   const [prefs, setPrefs] = useState({
-    difficulty: user?.preferences?.difficulty || 'Beginner',
+    difficulty: user?.difficultyLevel || 'Beginner',
     timeOfDay: user?.preferences?.timeOfDay || 'Anytime',
     categories: user?.preferences?.categories || [],
   });
@@ -34,7 +34,7 @@ export default function Profile() {
           userAPI.getProgress(),
         ]);
         if (favRes.status === 'fulfilled') {
-          setFavorites(favRes.value.data.favorites || favRes.value.data || []);
+          setFavorites(favRes.value.data.data || []);
         }
         if (progRes.status === 'fulfilled') {
           setProgress(progRes.value.data);
@@ -61,7 +61,11 @@ export default function Profile() {
     setSaveError('');
     try {
       const response = await userAPI.updatePreferences(prefs);
-      const updatedUser = response.data.user || { ...user, preferences: prefs };
+      const updatedUser = {
+        ...user,
+        difficultyLevel: response.data.difficultyLevel || user.difficultyLevel,
+        preferences: response.data.preferences || user.preferences,
+      };
       updateUser(updatedUser);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
@@ -96,7 +100,7 @@ export default function Profile() {
             <h2 className="text-xl font-bold text-secondary-900 dark:text-white">{user?.name}</h2>
             <p className="text-secondary-500 dark:text-secondary-400 text-sm mt-1">{user?.email}</p>
             <div className="mt-3">
-              <DifficultyBadge difficulty={user?.preferences?.difficulty || 'Beginner'} />
+              <DifficultyBadge difficulty={user?.difficultyLevel || 'Beginner'} />
             </div>
             <p className="text-xs text-secondary-400 dark:text-secondary-500 mt-3">Member since {memberSince}</p>
           </div>
@@ -111,7 +115,7 @@ export default function Profile() {
                 <div className="flex justify-between text-sm">
                   <dt className="text-secondary-500 dark:text-secondary-400">Sessions Completed</dt>
                   <dd className="font-bold text-secondary-900 dark:text-white">
-                    {progress?.completedModules?.length ?? 0}
+                    {progress?.stats?.totalCompleted ?? 0}
                   </dd>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -121,7 +125,7 @@ export default function Profile() {
                 <div className="flex justify-between text-sm">
                   <dt className="text-secondary-500 dark:text-secondary-400">Level</dt>
                   <dd className="font-bold text-secondary-900 dark:text-white capitalize">
-                    {user?.preferences?.difficulty || 'Beginner'}
+                    {user?.difficultyLevel || 'Beginner'}
                   </dd>
                 </div>
               </dl>
@@ -252,7 +256,7 @@ export default function Profile() {
                         <p className="font-medium text-secondary-900 dark:text-white text-sm">{mod.title}</p>
                         <p className="text-xs text-secondary-400 dark:text-secondary-500 capitalize">{mod.category} · {mod.duration} min</p>
                       </div>
-                      <DifficultyBadge difficulty={mod.difficulty} />
+                      <DifficultyBadge difficulty={mod.difficultyLevel} />
                     </div>
                   );
                 })}

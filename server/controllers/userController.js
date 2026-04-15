@@ -78,6 +78,7 @@ const getProgress = async (req, res, next) => {
         totalCompleted: user.completedModules.length,
         totalMinutes,
         categoryBreakdown,
+        favoritesCount: user.favorites.length,
       },
       data: user.completedModules,
     });
