@@ -141,7 +141,3 @@ Simulated posture analysis with pose selector, accuracy meter, and cycling feedb
 
 ### Dark Mode
 One-click toggle persisted in `localStorage`; uses Tailwind's `dark:` variant classes throughout.
-
-## 📜 License
-
-MIT
