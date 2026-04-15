@@ -1,26 +1,10 @@
 const express = require('express');
 const { body } = require('express-validator');
-const rateLimit = require('express-rate-limit');
+const { authLimiter, apiLimiter } = require('../config/rateLimiter');
 const { register, login, getProfile } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
 const router = express.Router();
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 20,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many requests, please try again later.' },
-});
-
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many requests, please try again later.' },
-});
 
 router.post(
   '/register',

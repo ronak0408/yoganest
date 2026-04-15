@@ -1,5 +1,5 @@
 const express = require('express');
-const rateLimit = require('express-rate-limit');
+const { apiLimiter } = require('../config/rateLimiter');
 const {
   toggleFavorite,
   getFavorites,
@@ -10,14 +10,6 @@ const {
 const { protect } = require('../middleware/auth');
 
 const router = express.Router();
-
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many requests, please try again later.' },
-});
 
 router.post('/favorites', apiLimiter, protect, toggleFavorite);
 router.get('/favorites', apiLimiter, protect, getFavorites);

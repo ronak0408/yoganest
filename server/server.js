@@ -12,7 +12,10 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+  credentials: true,
+}));
 app.use(express.json());
 
 if (process.env.NODE_ENV !== 'test') {

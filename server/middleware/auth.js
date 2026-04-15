@@ -20,6 +20,9 @@ const protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Auth middleware error:', err.message);
+    }
     return res.status(401).json({ success: false, message: 'Not authorized, invalid token' });
   }
 };
