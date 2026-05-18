@@ -1,4 +1,4 @@
-# 🧘 YogaNest - Full-Stack Wellness Platform
+# 🧘 YogaNest - Wellness Platform
 
 A modern, production-ready web application for guided yoga modules, personalized recommendations, and AI-based posture tracking.
 
